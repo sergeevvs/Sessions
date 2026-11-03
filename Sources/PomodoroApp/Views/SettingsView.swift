@@ -129,14 +129,10 @@ struct SettingsView: View {
                 .help(t("Звук и всплывающие уведомления включаются независимо."))
             toggleRow(t("Всплывающий баннер"), isOn: binding(\.notificationsEnabled))
                 .help(t("Показ зависит от разрешения macOS и режима фокусирования."))
-            VStack(spacing: 8) {
-                GlassActionButton(title: t("Проверить звук"), systemImage: "speaker.wave.2") {
-                    model.testSound()
-                }
-                GlassActionButton(title: t("Проверить уведомление"), systemImage: "bell") {
-                    model.testNotification()
-                }
+            GlassActionButton(title: t("Проверить"), systemImage: "bell") {
+                Task { await model.testNotifications() }
             }
+            .disabled(!settings.soundEnabled && !settings.notificationsEnabled)
             .padding(.top, 15)
             if (settings.notificationsEnabled && model.notificationStatus != .authorized)
                 || model.notificationStatus == .denied {

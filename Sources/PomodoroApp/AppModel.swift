@@ -96,14 +96,16 @@ final class AppModel {
         send(.updateSettings(settings))
     }
 
-    func testNotification() {
-        Task { [weak self] in
-            guard let self else { return }
-            await notifications.testNotification(soundEnabled: engine.settings.soundEnabled, language: engine.settings.language)
+    func testNotifications() async {
+        let settings = engine.settings
+        if settings.notificationsEnabled {
+            await notifications.testNotification(soundEnabled: settings.soundEnabled, language: settings.language)
+        }
+        if CompletionDeliveryPolicy.shouldPlayFallbackSound(
+            settings: settings, authorization: notifications.authorization, recovering: false) {
+            notifications.playSound()
         }
     }
-
-    func testSound() { notifications.playSound() }
 
     func setLaunchAtLogin(_ enabled: Bool) {
         cachedIntegrationError = nil

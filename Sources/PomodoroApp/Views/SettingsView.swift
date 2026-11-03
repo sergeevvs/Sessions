@@ -2,6 +2,17 @@ import AppKit
 import PomodoroCore
 import SwiftUI
 
+private struct SettingsTabButtonStyle: ButtonStyle {
+    @Environment(\.isFocused) private var isFocused
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label.overlay {
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(PomodoroStyle.accent.opacity(isFocused ? 0.8 : 0), lineWidth: 2)
+        }
+    }
+}
+
 struct SettingsView: View {
     let model: AppModel
     private func t(_ text: String) -> String { AppStrings.text(text, language: model.engine.settings.language) }
@@ -42,7 +53,7 @@ struct SettingsView: View {
                         .frame(height: 27)
                         .contentShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(SettingsTabButtonStyle())
                 .background {
                     if selectedTab == tab {
                         RoundedRectangle(cornerRadius: 8)

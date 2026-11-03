@@ -24,7 +24,7 @@ swift_args=(
     --config-path "$cache_dir/config"
     --security-path "$cache_dir/security"
 )
-mkdir -p "$app_dir/Contents/MacOS"
+mkdir -p "$app_dir/Contents/MacOS" "$app_dir/Contents/Resources"
 if $universal; then
     # Separate SwiftPM builds also work with Command Line Tools alone; the
     # multi-architecture SwiftPM build requires XCBuild from full Xcode.
@@ -41,6 +41,7 @@ else
     cp "$bin_path/Pomodoro" "$app_dir/Contents/MacOS/Pomodoro"
 fi
 cp "$repo_root/Resources/Info.plist" "$app_dir/Contents/Info.plist"
+cp "$repo_root/Resources/AppIcon.icns" "$app_dir/Contents/Resources/AppIcon.icns"
 codesign --force --sign - "$app_dir"
 
 # Retire the pre-rename generated bundle: notification routing uses bundle IDs,

@@ -1,4 +1,5 @@
-import AppKit
+import Foundation
+import AudioToolbox
 import Testing
 import UserNotifications
 import PomodoroCore
@@ -6,9 +7,8 @@ import PomodoroCore
 
 @MainActor
 struct CompletionSoundTests {
-    @Test func phaseAndTestNotificationsUseTheStandaloneSoundFile() async throws {
-        let url = try #require(CompletionSound.fileURL)
-        let expectedSound = UNNotificationSound(named: UNNotificationSoundName(url.lastPathComponent))
+    @Test func phaseAndTestNotificationsUseTheSystemDefaultSound() async throws {
+        let expectedSound = UNNotificationSound.default
         let backend = SuspendedNotificationBackend()
         let service = NotificationService(backend: backend, soundPlayer: {})
         let now = Date()
@@ -28,10 +28,12 @@ struct CompletionSoundTests {
         #expect(notification.nativeContent.sound == nil)
     }
 
-    @Test func sharedAudioResourceCanBePlayedAndFitsNotificationLimit() throws {
+    @Test func standaloneNotificationToneIsAnInstalledSystemSound() throws {
         let url = try #require(CompletionSound.fileURL)
-        let sound = try #require(NSSound(contentsOf: url, byReference: false))
-        #expect(sound.duration > 0)
-        #expect(sound.duration < 30)
+        #expect(url.path.hasPrefix("/System/Library/"))
+        var soundID: SystemSoundID = 0
+        #expect(AudioServicesCreateSystemSoundID(url as CFURL, &soundID) == noErr)
+        defer { AudioServicesDisposeSystemSoundID(soundID) }
+        #expect(soundID != 0)
     }
 }

@@ -41,9 +41,6 @@ else
     cp "$bin_path/Pomodoro" "$app_dir/Contents/MacOS/Pomodoro"
 fi
 cp "$repo_root/Resources/Info.plist" "$app_dir/Contents/Info.plist"
-# UserNotifications looks in the main app bundle, not SwiftPM's resource bundle.
-mkdir -p "$app_dir/Contents/Resources"
-cp "$repo_root/Sources/PomodoroApp/Resources/SessionsCompletion.wav" "$app_dir/Contents/Resources/SessionsCompletion.wav"
 codesign --force --sign - "$app_dir"
 
 # Retire the pre-rename generated bundle: notification routing uses bundle IDs,

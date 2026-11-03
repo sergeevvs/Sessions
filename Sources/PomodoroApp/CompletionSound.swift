@@ -1,26 +1,30 @@
 import AppKit
+import AudioToolbox
 import UserNotifications
 
 @MainActor
 enum CompletionSound {
-    private static let resourceName = "SessionsCompletion"
-    private static let resourceExtension = "wav"
+    static let notification = UNNotificationSound.default
 
-    static var fileURL: URL? {
-        Bundle.main.url(forResource: resourceName, withExtension: resourceExtension)
-            ?? Bundle.module.url(forResource: resourceName, withExtension: resourceExtension)
-    }
+    // macOS 26 uses Rebound for the default notification tone. Read the system
+    // resource in place; do not redistribute it or load private framework code.
+    static let fileURL = Bundle(path: "/System/Library/PrivateFrameworks/ToneLibrary.framework")?
+        .url(forResource: "Rebound-EncoreInfinitum", withExtension: "caf",
+             subdirectory: "AlertTones/EncoreInfinitum")
 
-    static let notification = UNNotificationSound(
-        named: UNNotificationSoundName("\(resourceName).\(resourceExtension)"))
-
-    private static let player: NSSound? = {
+    private static let soundID: SystemSoundID? = {
         guard let url = fileURL else { return nil }
-        return NSSound(contentsOf: url, byReference: false)
+        var identifier: SystemSoundID = 0
+        guard AudioServicesCreateSystemSoundID(url as CFURL, &identifier) == noErr else { return nil }
+        return identifier
     }()
 
     static func play() {
-        player?.stop()
-        player?.play()
+        if let soundID {
+            AudioServicesPlayAlertSound(soundID)
+        } else {
+            // Keep a system alert if a future macOS version moves the resource.
+            NSSound.beep()
+        }
     }
 }

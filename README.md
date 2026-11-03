@@ -6,18 +6,17 @@ Pause, resume, reset, or move between phases, and choose manual or automatic tra
 
 ## Install
 
-Requires macOS 26 or later (Apple Silicon or Intel). This repository is private:
-install [GitHub CLI](https://cli.github.com/) and sign in with `gh auth login`
-using an account with access to `sergeevvs/Sessions`.
+Requires macOS 26 or later (Apple Silicon or Intel).
 
 Run this single command in Terminal:
 
 ```sh
-(set -o pipefail; gh api -H 'Accept: application/vnd.github.raw' repos/sergeevvs/Sessions/contents/scripts/install-release.sh | /bin/bash)
+curl -fsSL https://raw.githubusercontent.com/sergeevvs/Sessions/main/install.sh | bash
 ```
 
 It downloads the latest prebuilt release, verifies its checksum and code signature,
-installs `~/Applications/Sessions.app`, and launches it. Xcode is not required.
+installs `~/Applications/Sessions.app`, and launches it. No GitHub account,
+GitHub CLI, or Xcode is required.
 Downloaded archives, the installer helper, and temporary files are removed when
 the command finishes, including on errors. Run the same command to update;
 settings and timer progress are preserved. Running Sessions copies are closed

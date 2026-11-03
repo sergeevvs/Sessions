@@ -5,10 +5,10 @@ destination="$HOME/Applications"
 launch=true
 usage() {
     cat <<'HELP'
-Usage: bash install-release.sh [--destination DIRECTORY] [--no-launch]
+Usage: bash install.sh [--destination DIRECTORY] [--no-launch]
 
-Download the latest private GitHub release and install Sessions.
-Requires macOS 26+ and an authenticated GitHub CLI (gh). No Xcode needed.
+Download the latest public GitHub release and install Sessions.
+Requires macOS 26+. No GitHub account, GitHub CLI, or Xcode needed.
 Defaults to ~/Applications/Sessions.app and launches the app.
 HELP
 }
@@ -25,8 +25,6 @@ done
 [[ "$(uname -s)" == Darwin ]] || { printf 'Sessions requires macOS.\n' >&2; exit 1; }
 macos_version="$(sw_vers -productVersion)"
 [[ "${macos_version%%.*}" -ge 26 ]] || { printf 'Sessions requires macOS 26+.\n' >&2; exit 1; }
-command -v gh > /dev/null || { printf 'Install GitHub CLI (gh), then run gh auth login.\n' >&2; exit 1; }
-gh auth status --hostname github.com > /dev/null 2>&1 || { printf 'Run gh auth login with access to %s first.\n' "$repository" >&2; exit 1; }
 mkdir -p "$destination"
 destination="$(cd "$destination" && pwd -P)"
 target="$destination/Sessions.app"
@@ -60,9 +58,22 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 mkdir "$work_dir/download"
-tag="$(gh api "repos/$repository/releases/latest" --jq .tag_name)"
-gh release download "$tag" --repo "$repository" --pattern Sessions-macOS-universal.zip \
-    --pattern SHA256SUMS --dir "$work_dir/download"
+# Resolve latest once, then pin both downloads to that release. This avoids
+# mixing files if a new version is published during installation, and needs
+# neither the authenticated GitHub API nor a JSON parser.
+release_url="$(curl --fail --silent --show-error --location --head --output /dev/null \
+    --write-out '%{url_effective}' "https://github.com/$repository/releases/latest")"
+case "$release_url" in
+    "https://github.com/$repository/releases/tag/"*) ;;
+    *) printf 'Could not resolve the latest Sessions release.\n' >&2; exit 1 ;;
+esac
+tag="${release_url#https://github.com/$repository/releases/tag/}"
+[[ -n "$tag" ]] || { printf 'The latest release has no tag.\n' >&2; exit 1; }
+asset_url="https://github.com/$repository/releases/download/$tag"
+for asset in Sessions-macOS-universal.zip SHA256SUMS; do
+    curl --fail --silent --show-error --location "$asset_url/$asset" \
+        --output "$work_dir/download/$asset"
+done
 (cd "$work_dir/download" && shasum -a 256 -c SHA256SUMS)
 /usr/bin/ditto -x -k "$work_dir/download/Sessions-macOS-universal.zip" "$work_dir/unpacked"
 payload="$work_dir/unpacked/Sessions"
@@ -74,8 +85,8 @@ mode=no-launch
 if $launch; then mode=release; fi
 "$payload/SessionsInstaller" "$target" "$payload/Sessions.app" "$mode" > "$work_dir/previous-paths"
 if [[ -d "$target" ]]; then mv "$target" "$work_dir/previous.app"; fi
-mv "$payload/Sessions.app" "$target"
 new_installed=true
+mv "$payload/Sessions.app" "$target"
 lsregister="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
 while IFS= read -r previous_path; do
     if [[ -n "$previous_path" && "$previous_path" != "$target" ]]; then

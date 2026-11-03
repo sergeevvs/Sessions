@@ -161,12 +161,13 @@ struct GlassSwitchStyle: ToggleStyle {
     @Environment(\.colorSchemeContrast) private var contrast
 
     func makeBody(configuration: Configuration) -> some View {
-        Button {
-            configuration.isOn.toggle()
-        } label: {
-            HStack(spacing: 7) {
-                configuration.label
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        HStack(spacing: 7) {
+            configuration.label
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityHidden(true)
+            Button {
+                configuration.isOn.toggle()
+            } label: {
                 ZStack(alignment: configuration.isOn ? .trailing : .leading) {
                     Capsule().fill(configuration.isOn ? PomodoroStyle.accent : PomodoroStyle.track)
                     Capsule().strokeBorder(PomodoroStyle.secondary.opacity(contrast == .increased ? 0.65 : 0.13), lineWidth: 1)
@@ -178,17 +179,28 @@ struct GlassSwitchStyle: ToggleStyle {
                         .padding(2)
                 }
                 .frame(width: 29, height: 18)
+                .contentShape(Capsule())
             }
-            .frame(minHeight: 34)
-            .contentShape(Rectangle())
+            .buttonStyle(SwitchControlButtonStyle())
+            .accessibilityRepresentation {
+                Toggle(isOn: configuration.$isOn) { configuration.label }
+                    .toggleStyle(.switch)
+            }
         }
-        .buttonStyle(.plain)
+        .frame(minHeight: 34)
         .foregroundStyle(PomodoroStyle.ink)
         .opacity(isEnabled ? 1 : 0.4)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.12), value: configuration.isOn)
-        .accessibilityRepresentation {
-            Toggle(isOn: configuration.$isOn) { configuration.label }
-                .toggleStyle(.switch)
+    }
+}
+
+private struct SwitchControlButtonStyle: ButtonStyle {
+    @Environment(\.isFocused) private var isFocused
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label.overlay {
+            Capsule()
+                .strokeBorder(PomodoroStyle.accent.opacity(isFocused ? 0.8 : 0), lineWidth: 2)
         }
     }
 }

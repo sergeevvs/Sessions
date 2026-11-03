@@ -10,7 +10,8 @@ let package = Package(
     ],
     targets: [
         .target(name: "PomodoroCore"),
-        .executableTarget(name: "PomodoroApp", dependencies: ["PomodoroCore"]),
+        .executableTarget(name: "PomodoroApp", dependencies: ["PomodoroCore"],
+                          resources: [.copy("Resources/SessionsCompletion.wav")]),
         .testTarget(name: "PomodoroCoreTests", dependencies: ["PomodoroCore"]),
         .testTarget(name: "PomodoroAppTests", dependencies: ["PomodoroApp"])
     ]

@@ -2,6 +2,16 @@ import AppKit
 import UserNotifications
 import PomodoroCore
 
+extension ScheduledNotification {
+    @MainActor var nativeContent: UNNotificationContent {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = soundEnabled ? CompletionSound.notification : nil
+        return content
+    }
+}
+
 @MainActor
 protocol NotificationBackend: AnyObject {
     func notificationAuthorization() async -> NotificationAuthorization
@@ -38,14 +48,10 @@ private final class SystemNotificationBackend: NotificationBackend {
     }
 
     func add(_ notification: ScheduledNotification, identifier: String) async throws {
-        let content = UNMutableNotificationContent()
-        content.title = notification.title
-        content.body = notification.body
-        content.sound = notification.soundEnabled ? .default : nil
         let interval = notification.deadline.timeIntervalSinceNow
         guard interval > 0 else { return }
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(interval, 0.1), repeats: false)
-        try await center.add(UNNotificationRequest(identifier: identifier, content: content, trigger: trigger))
+        try await center.add(UNNotificationRequest(identifier: identifier, content: notification.nativeContent, trigger: trigger))
     }
 }
 
@@ -85,7 +91,7 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     var onNotificationOpened: (() -> Void)?
 
     init(backend: (any NotificationBackend)? = nil,
-         soundPlayer: @escaping () -> Void = { NSSound(named: "Glass")?.play() }) {
+         soundPlayer: @escaping () -> Void = { CompletionSound.play() }) {
         let backend = backend ?? SystemNotificationBackend()
         self.backend = backend
         self.soundPlayer = soundPlayer

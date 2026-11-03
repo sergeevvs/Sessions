@@ -1,0 +1,26 @@
+.build/
+build/
+.superpowers/
+.DS_Store
+.swiftpm/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.app/
+*.dmg
+*.zip
+*.log
+
+# Local design, planning, screenshots, and agent/editor files.
+/docs/
+/scripts/README.md
+/.codex/
+/.agents/
+/.vscode/
+/.idea/
+/AGENTS.md
+
+# Local environment and credentials.
+.env
+.env.*
+!.env.example

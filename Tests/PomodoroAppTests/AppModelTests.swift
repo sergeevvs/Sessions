@@ -2,10 +2,142 @@ import Foundation
 import Testing
 import PomodoroCore
 import Observation
+import SwiftUI
 @testable import PomodoroApp
 
 @MainActor
 struct AppModelTests {
+    @Test func countdownDemandReschedulesLiveTimerWithoutLosingDeadline() throws {
+        let suite = "PomodoroTests.\(UUID())"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let now = Calendar.current.startOfDay(for: Date()).addingTimeInterval(36 * 3600)
+        let model = AppModel(defaults: defaults, notifications: NotificationService(backend: ModelNotificationBackend()),
+                             clock: { now })
+        model.setVoiceOverEnabled(false)
+        model.updateSettings { $0.statusItemFields = [.symbol] }
+        model.send(.start)
+        let deadline = try #require(model.engine.state.deadline)
+        func nextFire() throws -> Date {
+            try #require(Mirror(reflecting: model).descendant("timer") as? Timer).fireDate
+        }
+        #expect(try nextFire() == deadline)
+        model.setPopoverVisible(true)
+        #expect(try nextFire().timeIntervalSince(now) < 1.02)
+        model.setPopoverVisible(false)
+        #expect(try nextFire() == deadline)
+        model.setStatusItemHovered(true)
+        #expect(try nextFire().timeIntervalSince(now) < 1.02)
+        model.setStatusItemHovered(false)
+        #expect(try nextFire() == deadline)
+        model.setVoiceOverEnabled(true)
+        #expect(try nextFire().timeIntervalSince(now) < 1.02)
+        model.setVoiceOverEnabled(false)
+        #expect(try nextFire() == deadline)
+        model.updateSettings { $0.statusItemFields = [.time] }
+        #expect(try nextFire().timeIntervalSince(now) < 1.02)
+        #expect(model.engine.state.deadline == deadline)
+        model.handleSleep()
+    }
+
+    @Test func nativeDialKeepsAccessibleTimeCurrentAcrossTicksAndReopen() async throws {
+        let suite = "PomodoroTests.\(UUID())"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        var now = Date()
+        let model = AppModel(defaults: defaults, notifications: NotificationService(backend: ModelNotificationBackend()),
+                             clock: { now }, startLifecycle: false)
+        model.setPopoverVisible(true)
+        model.send(.start)
+        let dial = TimerDialRenderer(model: model)
+        for _ in 0..<100 {
+            if dial.accessibilityLabel() == "Work, 25:00 remaining" { break }
+            await Task.yield()
+        }
+        #expect(dial.accessibilityLabel() == "Work, 25:00 remaining")
+        now = now.addingTimeInterval(1)
+        model.send(.tick(recovering: false))
+        for _ in 0..<100 {
+            if dial.accessibilityLabel() == "Work, 24:59 remaining" { break }
+            await Task.yield()
+        }
+        #expect(dial.accessibilityLabel() == "Work, 24:59 remaining")
+        model.setPopoverVisible(false)
+        now = now.addingTimeInterval(30)
+        model.send(.tick(recovering: false))
+        #expect(dial.accessibilityLabel() == "Work, 24:59 remaining")
+        model.setPopoverVisible(true)
+        for _ in 0..<100 {
+            if dial.accessibilityLabel() == "Work, 24:29 remaining" { break }
+            await Task.yield()
+        }
+        #expect(dial.accessibilityLabel() == "Work, 24:29 remaining")
+        model.send(.pause)
+        for _ in 0..<100 {
+            if dial.accessibilityValue() as? String == "Pause · Work" { break }
+            await Task.yield()
+        }
+        #expect(dial.accessibilityValue() as? String == "Pause · Work")
+    }
+
+    @Test func visibleRunningTickDoesNotInvalidateTimerLayout() throws {
+        let suite = "PomodoroTests.\(UUID())"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        var now = Date()
+        let model = AppModel(defaults: defaults, notifications: NotificationService(backend: ModelNotificationBackend()),
+                             clock: { now }, startLifecycle: false)
+        model.setPopoverVisible(true)
+        model.send(.start)
+        let layoutChanged = ObservationFlag()
+        withObservationTracking { _ = TimerDialView(model: model).body } onChange: { layoutChanged.mark() }
+        now = now.addingTimeInterval(1)
+        model.send(.tick(recovering: false))
+        #expect(model.now == now)
+        #expect(!layoutChanged.value)
+    }
+
+    @Test func closingFreezesPopoverClockAndReopeningCatchesUp() throws {
+        let suite = "PomodoroTests.\(UUID())"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        var now = Date()
+        let model = AppModel(defaults: defaults, notifications: NotificationService(backend: ModelNotificationBackend()),
+                             clock: { now }, startLifecycle: false)
+        model.send(.start)
+        model.setPopoverVisible(true)
+        now = now.addingTimeInterval(10)
+        model.send(.tick(recovering: false))
+        #expect(model.now == now)
+        model.setPopoverVisible(false)
+        let closed = model.now
+        now = now.addingTimeInterval(30)
+        model.send(.tick(recovering: false))
+        #expect(model.now == closed)
+        #expect(model.statusNow == now)
+        model.setPopoverVisible(true)
+        #expect(model.now == now)
+        #expect(model.engine.remaining(at: model.now) == 1460)
+    }
+
+    @Test func hiddenRunningTickDoesNotInvalidatePopoverClock() throws {
+        let suite = "PomodoroTests.\(UUID())"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        var now = Date()
+        let model = AppModel(defaults: defaults, notifications: NotificationService(backend: ModelNotificationBackend()),
+                             clock: { now }, startLifecycle: false)
+        model.send(.start)
+        let displayed = model.now
+        let displayChanged = ObservationFlag()
+        withObservationTracking { _ = model.now } onChange: { displayChanged.mark() }
+        now = now.addingTimeInterval(1)
+        model.send(.tick(recovering: false))
+        #expect(!displayChanged.value)
+        #expect(model.now == displayed)
+        #expect(model.engine.remaining(at: now) == 1499)
+    }
+
     @Test func manualNavigationPersistsProgressWithoutPlayingCompletionSound() throws {
         let suite = "PomodoroTests.\(UUID())"
         let defaults = try #require(UserDefaults(suiteName: suite))
@@ -31,7 +163,7 @@ struct AppModelTests {
         #expect(sounds == 0)
     }
 
-    @Test func ordinaryTickPublishesClockButNotUnchangedEngine() throws {
+    @Test func ordinaryTickPublishesStatusClockButNotUnchangedEngine() throws {
         let suite = "PomodoroTests.\(UUID())"
         let defaults = try #require(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
@@ -44,7 +176,7 @@ struct AppModelTests {
         now = now.addingTimeInterval(1)
         model.send(.tick(recovering: false))
         #expect(!engineChanged.value)
-        #expect(model.now == now)
+        #expect(model.statusNow == now)
         model.send(.pause)
         #expect(engineChanged.value)
     }

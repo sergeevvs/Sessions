@@ -65,6 +65,8 @@ final class StatusBarController: NSObject, NSPopoverDelegate {
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
             button.font = .monospacedDigitSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
             button.imagePosition = .imageLeading
+            button.addTrackingArea(NSTrackingArea(rect: .zero,
+                options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect], owner: self))
         }
         model.onNotificationOpened = { [weak self] in self?.showPopover() }
         updateStatusItem()
@@ -122,6 +124,7 @@ final class StatusBarController: NSObject, NSPopoverDelegate {
     }
 
     func popoverWillShow(_ notification: Notification) {
+        model.setPopoverVisible(true)
         // Native safe-area insets are available once the popover has a window.
         // Keep the usable content size while the background fills that window.
         let animates = popover.animates
@@ -136,7 +139,17 @@ final class StatusBarController: NSObject, NSPopoverDelegate {
     }
 
     func popoverDidClose(_ notification: Notification) {
+        model.setPopoverVisible(false)
         anchorPanel.orderOut(nil)
+    }
+
+    @objc(mouseEntered:) private func statusItemMouseEntered(_ event: NSEvent) {
+        // A tooltip or VoiceOver can still request a live countdown in icon-only mode.
+        model.setStatusItemHovered(true)
+    }
+
+    @objc(mouseExited:) private func statusItemMouseExited(_ event: NSEvent) {
+        model.setStatusItemHovered(false)
     }
 
     private func startDismissalObservers() {
@@ -238,7 +251,7 @@ final class StatusBarController: NSObject, NSPopoverDelegate {
 
     private func updateStatusItem() {
         let content = withObservationTracking {
-            StatusItemFormatter.content(for: model.engine, at: model.now)
+            StatusItemFormatter.content(for: model.engine, at: model.statusNow)
         } onChange: { [weak self] in
             Task { @MainActor [weak self] in self?.updateStatusItem() }
         }

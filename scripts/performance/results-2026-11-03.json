@@ -1,0 +1,471 @@
+{
+  "date": "2026-11-03",
+  "host": "Apple M4 / 10 cores / 16 GB RAM / macOS 26.4.1 (25E253)",
+  "baselineCommit": "2a0059cc05fee85ae75ed572f8c9b8e44447ed8f",
+  "sourceSHA256": {
+    "Sources/PomodoroApp/AppInstanceLock.swift": "52e9e7950f13d875af54dc110a3f76fdb651d12f7657c1a6f764d04bbba03ea6",
+    "Sources/PomodoroApp/AppMain.swift": "a0773429e8ab44bf8b07bd5532c1c44e4e1cc97240b20824e7d462fed09544fa",
+    "Sources/PomodoroApp/AppModel.swift": "7d4881345f8109b63bd33a4dec7c4ec653359364ee386709e03b8183bc2fffad",
+    "Sources/PomodoroApp/AppStrings.swift": "f462f2b470ae94434ce6fc0452e859d0e1b84257ef8838eca70ddf1d1bf07df7",
+    "Sources/PomodoroApp/CompletionSound.swift": "4c80ad1f171a4f9bc6e2ec56f8aa1dc063990ff598898fbcec892b1724696fad",
+    "Sources/PomodoroApp/LoginItemService.swift": "9a719cbdf6f89d7de542d99c18eaba8febbcf0b616035f7c339564f30ab5b262",
+    "Sources/PomodoroApp/NotificationService.swift": "cbb1d2e602d5708a5f34d6d0d40437e34c88f797a8830348a30694a5686f15ec",
+    "Sources/PomodoroApp/PopoverAppearance.swift": "dd91fc78dac4b51b395f09decce5f5905aa429322b63a184ecde7aacd5408e45",
+    "Sources/PomodoroApp/StatusBarController.swift": "16dcdb2e151cc7b20557cb49167aac48e4303d1f3f9c4743abe7fcefaf0f3aa0",
+    "Sources/PomodoroApp/TimerRefreshSchedule.swift": "0fdf6177917e476cb1fb10e173c0cedaadc4f6d6a1c7c73f32406ea1d23d26bc",
+    "Sources/PomodoroApp/Views/FittingContent.swift": "427618a5a1cfb2e1d4ecdaa434bdb2f583fdd2b676a44a5ea302a215b743fe21",
+    "Sources/PomodoroApp/Views/GlassStyle.swift": "05d54ff858f4af32d5921e99842b45963269c36093673b4a48901865b48828fe",
+    "Sources/PomodoroApp/Views/PopoverView.swift": "3f895b184f21b963ed82cd862e7e4161136230c8b93a3d9b93f0852ab205e2fd",
+    "Sources/PomodoroApp/Views/SettingsView.swift": "b5dbc39d707a52686aaabb934e5a7316a2827f6c89ab34965bebc7b0ca361d17",
+    "Sources/PomodoroApp/Views/TimerDialView.swift": "199b03e11e4af8b0a58d66b40b06000390d9f02b58fc7c23ae09c9343b74e1ba",
+    "Sources/PomodoroApp/Views/TimerView.swift": "46a981d79ceb08e4824e24a4cd3e4484b0ee68d601711347e356fa381839a6b2",
+    "Sources/PomodoroCore/AppLanguage.swift": "24bfa5de3abccf07298140193e964a85b018e0c87dc880d66abdd187f097d4f9",
+    "Sources/PomodoroCore/AppTheme.swift": "bacb9fa640dcc93e00b65b55e89701163b669c5c1f1e036ddb03112f3a381995",
+    "Sources/PomodoroCore/CycleSummary.swift": "ab3c9f5e8331983c2a8177a20a3f6861a61a5feeb0b04c029f62e6cd9ad8cfc0",
+    "Sources/PomodoroCore/DeliveryPolicy.swift": "3f4f738793a66e8cd43684b2c30c1ccf9ce4ec1574ab699987efb06a3e60e6d7",
+    "Sources/PomodoroCore/SessionPersistence.swift": "21fa15f44860bda16a357dbad501ec2e245b7f0f267f1a149be843db688cbd05",
+    "Sources/PomodoroCore/Settings.swift": "8816304d05890a89a67ee8851bef4ded2647edd38a59a2f7bfc6d07d398d6340",
+    "Sources/PomodoroCore/StatusItemFormatter.swift": "7d6d508a812b201f0441b0a5e88e0dc08ead8385019295b25033556c1e253376",
+    "Sources/PomodoroCore/TimerEngine.swift": "21550fa7ce19ecd497c13b8f95f9182c5194decdc0a47cf5a6f3cafa8ac9abd0"
+  },
+  "benchmark": {
+    "before": {
+      "hidden-idle": {
+        "measurementSeconds": 31.781949416617863,
+        "cpuPercent": 0.00433264801334054,
+        "cpuPercentRange": [
+          0.0031050826078414966,
+          0.005573078423374829
+        ],
+        "interruptWakeupsPerSecond": 0.25171520774672906,
+        "popoverClockUpdates": 0,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          69.703125,
+          70.390625
+        ]
+      },
+      "hidden-running-before-open": {
+        "measurementSeconds": 30.00386545836227,
+        "cpuPercent": 0.31484943208766264,
+        "cpuPercentRange": [
+          0.30759619135892674,
+          0.3221034984780487
+        ],
+        "interruptWakeupsPerSecond": 3.032942542896176,
+        "popoverClockUpdates": 31,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          70.5625,
+          70.703125
+        ]
+      },
+      "open-running": {
+        "measurementSeconds": 30.003699916647747,
+        "cpuPercent": 2.707232782145334,
+        "cpuPercentRange": [
+          2.6131768121538954,
+          2.8013008141010287
+        ],
+        "interruptWakeupsPerSecond": 4.832737309159189,
+        "popoverClockUpdates": 30,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          90.90625,
+          90.890625
+        ]
+      },
+      "hidden-running-after-close": {
+        "measurementSeconds": 30.667046374990605,
+        "cpuPercent": 2.4466131848024433,
+        "cpuPercentRange": [
+          2.387833244388806,
+          2.5058107345528597
+        ],
+        "interruptWakeupsPerSecond": 5.869492542548619,
+        "popoverClockUpdates": 30,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          92.65625,
+          92.65625
+        ]
+      },
+      "hidden-symbol-running": {
+        "measurementSeconds": 30.112536166678183,
+        "cpuPercent": 2.405858463697507,
+        "cpuPercentRange": [
+          2.3675214191668084,
+          2.4443478047942913
+        ],
+        "interruptWakeupsPerSecond": 3.553337367790484,
+        "popoverClockUpdates": 31,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          93.28125,
+          93.296875
+        ]
+      },
+      "settings-running": {
+        "measurementSeconds": 30.23566804168513,
+        "cpuPercent": 0.3231547583644984,
+        "cpuPercentRange": [
+          0.3171131481163688,
+          0.32924708053734136
+        ],
+        "interruptWakeupsPerSecond": 2.7120287167774406,
+        "popoverClockUpdates": 30,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          108.9375,
+          108.9375
+        ]
+      },
+      "open-paused": {
+        "measurementSeconds": 30.982151000003796,
+        "cpuPercent": 0.05040644208337342,
+        "cpuPercentRange": [
+          0.04768507641161872,
+          0.05330277307676572
+        ],
+        "interruptWakeupsPerSecond": 0.38731978292916236,
+        "popoverClockUpdates": 0,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          108.734375,
+          108.734375
+        ]
+      },
+      "hidden-paused": {
+        "measurementSeconds": 30.75288970838301,
+        "cpuPercent": 0.10617213637357649,
+        "cpuPercentRange": [
+          0.01962551214789926,
+          0.19666672702214444
+        ],
+        "interruptWakeupsPerSecond": 1.7884498179371875,
+        "popoverClockUpdates": 0,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          108.75,
+          109.125
+        ]
+      }
+    },
+    "after": {
+      "hidden-idle": {
+        "measurementSeconds": 31.32466674997704,
+        "cpuPercent": 0.008223551173140197,
+        "cpuPercentRange": [
+          0.007842144224010892,
+          0.00862128435769121
+        ],
+        "interruptWakeupsPerSecond": 0.22346606448750586,
+        "popoverClockUpdates": 0,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          69.578125,
+          70.25
+        ]
+      },
+      "hidden-running-before-open": {
+        "measurementSeconds": 30.10278804169502,
+        "cpuPercent": 0.34322402249550005,
+        "cpuPercentRange": [
+          0.34297204426218164,
+          0.3434743458491331
+        ],
+        "interruptWakeupsPerSecond": 3.022975807887195,
+        "popoverClockUpdates": 0,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          70.375,
+          70.515625
+        ]
+      },
+      "open-running": {
+        "measurementSeconds": 30.679250833345577,
+        "cpuPercent": 0.6680769394056582,
+        "cpuPercentRange": [
+          0.6630489209022569,
+          0.6731890806251273
+        ],
+        "interruptWakeupsPerSecond": 4.987083968611867,
+        "popoverClockUpdates": 30,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          91.203125,
+          91.234375
+        ]
+      },
+      "hidden-running-after-close": {
+        "measurementSeconds": 30.00403125002049,
+        "cpuPercent": 0.3712967736624528,
+        "cpuPercentRange": [
+          0.3662637489749185,
+          0.37633054129126103
+        ],
+        "interruptWakeupsPerSecond": 2.932939219623693,
+        "popoverClockUpdates": 0,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          92.484375,
+          92.46875
+        ]
+      },
+      "hidden-symbol-running": {
+        "measurementSeconds": 30.71815095836064,
+        "cpuPercent": 0.007578581155993633,
+        "cpuPercentRange": [
+          0.006315469426087652,
+          0.00885742232828643
+        ],
+        "interruptWakeupsPerSecond": 0.48831064149443576,
+        "popoverClockUpdates": 0,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          93.390625,
+          93.359375
+        ]
+      },
+      "settings-running": {
+        "measurementSeconds": 30.346070166677237,
+        "cpuPercent": 0.3444597584658046,
+        "cpuPercentRange": [
+          0.3440957240961914,
+          0.3448317898510151
+        ],
+        "interruptWakeupsPerSecond": 2.768068469446818,
+        "popoverClockUpdates": 30,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          109.109375,
+          109.109375
+        ]
+      },
+      "open-paused": {
+        "measurementSeconds": 30.870964541682042,
+        "cpuPercent": 0.046661969309544374,
+        "cpuPercentRange": [
+          0.0436125743649735,
+          0.04965587494320401
+        ],
+        "interruptWakeupsPerSecond": 0.38871477383862024,
+        "popoverClockUpdates": 0,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          109.234375,
+          109.234375
+        ]
+      },
+      "hidden-paused": {
+        "measurementSeconds": 30.721077708352823,
+        "cpuPercent": 0.017597038916802622,
+        "cpuPercentRange": [
+          0.017070354129781723,
+          0.018099737697982288
+        ],
+        "interruptWakeupsPerSecond": 1.0416301245610093,
+        "popoverClockUpdates": 0,
+        "engineUpdates": 0,
+        "notificationCalls": 0,
+        "residentMBRange": [
+          111.484375,
+          111.484375
+        ]
+      }
+    }
+  },
+  "actualReleaseApp": {
+    "bundleIdentifier": "local.sessions.performance.live.c07642b5-2aa5-4624-a550-c841021e2689",
+    "binarySHA256": "0fa35b4791e0d739547cec40d41e4bff9d30075c756ee63df2a2f9b95857bd25",
+    "samples": [
+      {
+        "scenario": "open-running",
+        "seconds": 30.017452624975704,
+        "cpuPercent": 0.6858843172744632,
+        "interruptWakeupsPerSecond": 4.797209203561342,
+        "before": {
+          "cpu_seconds": 0.267387958,
+          "monotonic_seconds": 276731.234822708,
+          "interrupt_wakeups": 165,
+          "resident_mb": 92.578,
+          "footprint_mb": 31.079
+        },
+        "after": {
+          "cpu_seconds": 0.473272958,
+          "monotonic_seconds": 276761.252275333,
+          "interrupt_wakeups": 309,
+          "resident_mb": 89.797,
+          "footprint_mb": 28.97
+        },
+        "uiBefore": {
+          "active": true,
+          "bundleIdentifier": "local.sessions.performance.live.c07642b5-2aa5-4624-a550-c841021e2689",
+          "pid": 12641,
+          "windows": [
+            {
+              "bounds": {
+                "Height": 506,
+                "Width": 314,
+                "X": 0,
+                "Y": 923
+              },
+              "layer": 25,
+              "onScreen": true
+            },
+            {
+              "bounds": {
+                "Height": 22,
+                "Width": 57,
+                "X": 0,
+                "Y": 1429
+              },
+              "layer": 25,
+              "onScreen": true
+            }
+          ]
+        },
+        "uiAfter": {
+          "active": true,
+          "bundleIdentifier": "local.sessions.performance.live.c07642b5-2aa5-4624-a550-c841021e2689",
+          "pid": 12641,
+          "windows": [
+            {
+              "bounds": {
+                "Height": 506,
+                "Width": 314,
+                "X": 0,
+                "Y": 923
+              },
+              "layer": 25,
+              "onScreen": true
+            },
+            {
+              "bounds": {
+                "Height": 22,
+                "Width": 57,
+                "X": 0,
+                "Y": 1429
+              },
+              "layer": 25,
+              "onScreen": true
+            }
+          ]
+        },
+        "timerBefore": "running 1496.9078139066696",
+        "timerAfter": "running 1466.8185600042343"
+      },
+      {
+        "scenario": "closed-running",
+        "seconds": 30.019275332975667,
+        "cpuPercent": 0.36787794100642324,
+        "interruptWakeupsPerSecond": 3.8308719555823,
+        "before": {
+          "cpu_seconds": 0.498324083,
+          "monotonic_seconds": 276763.451745,
+          "interrupt_wakeups": 383,
+          "resident_mb": 90.219,
+          "footprint_mb": 29.563
+        },
+        "after": {
+          "cpu_seconds": 0.608758375,
+          "monotonic_seconds": 276793.471020333,
+          "interrupt_wakeups": 498,
+          "resident_mb": 89.562,
+          "footprint_mb": 27.782
+        },
+        "uiBefore": {
+          "active": false,
+          "bundleIdentifier": "local.sessions.performance.live.c07642b5-2aa5-4624-a550-c841021e2689",
+          "pid": 12641,
+          "windows": [
+            {
+              "bounds": {
+                "Height": 506,
+                "Width": 314,
+                "X": 0,
+                "Y": 923
+              },
+              "layer": 25,
+              "onScreen": false
+            },
+            {
+              "bounds": {
+                "Height": 22,
+                "Width": 57,
+                "X": 0,
+                "Y": 1429
+              },
+              "layer": 25,
+              "onScreen": false
+            }
+          ]
+        },
+        "uiAfter": {
+          "active": false,
+          "bundleIdentifier": "local.sessions.performance.live.c07642b5-2aa5-4624-a550-c841021e2689",
+          "pid": 12641,
+          "windows": [
+            {
+              "bounds": {
+                "Height": 506,
+                "Width": 314,
+                "X": 0,
+                "Y": 923
+              },
+              "layer": 25,
+              "onScreen": false
+            },
+            {
+              "bounds": {
+                "Height": 22,
+                "Width": 57,
+                "X": 0,
+                "Y": 1429
+              },
+              "layer": 25,
+              "onScreen": false
+            }
+          ]
+        },
+        "timerBefore": "running 1464.6906089782715",
+        "timerAfter": "running 1434.5879249572754"
+      }
+    ],
+    "deadlineOnlyTest": {
+      "before": {
+        "completedSessions": 0,
+        "deadline": 1793730358.995851,
+        "phase": "work",
+        "status": "running"
+      },
+      "after": {
+        "completedSessions": 1,
+        "deadline": null,
+        "phase": "shortBreak",
+        "status": "waiting"
+      }
+    },
+    "binaryVerification": {
+      "productionBundleBinarySHA256": "aedfc2177ecb71884249bd8b989b5c22fd0cbc802300342314776e6ea776b536",
+      "isolatedBundleBinarySHA256": "0fa35b4791e0d739547cec40d41e4bff9d30075c756ee63df2a2f9b95857bd25",
+      "exactFixtureReconstructionMatched": true,
+      "difference": "Ad-hoc signature reflects the isolated bundle identifier and Info.plist; executable code is copied from the production bundle."
+    }
+  }
+}

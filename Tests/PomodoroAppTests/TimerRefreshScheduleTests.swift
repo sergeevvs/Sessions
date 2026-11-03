@@ -6,6 +6,32 @@ import PomodoroCore
 struct TimerRefreshScheduleTests {
     let now = Date(timeIntervalSince1970: 1_793_606_400)
 
+    @Test func hiddenRunningSymbolOnlySleepsUntilDeadline() {
+        var timer = TimerEngine(settings: .init(statusItemFields: [.symbol]), now: now)
+        _ = timer.handle(.start, at: now)
+        #expect(TimerRefreshSchedule.nextFireDate(for: timer, at: now) == now.addingTimeInterval(1500))
+    }
+
+    @Test func visibleOrAccessibleCountdownRequestsSecondsEvenWithSymbolOnlyMenuBar() {
+        var timer = TimerEngine(settings: .init(statusItemFields: [.symbol]), now: now)
+        _ = timer.handle(.start, at: now)
+        let next = TimerRefreshSchedule.nextFireDate(for: timer, at: now, needsSeconds: true)
+        #expect((1...1.02).contains(next.timeIntervalSince(now)))
+        let almostDone = now.addingTimeInterval(1499.9995)
+        #expect(TimerRefreshSchedule.nextFireDate(for: timer, at: almostDone, needsSeconds: true) == timer.state.deadline)
+    }
+
+    @Test func hiddenRunningWithoutSecondsStillResetsProgressAtLocalMidnight() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try #require(TimeZone(secondsFromGMT: 0))
+        let start = try #require(calendar.date(from: DateComponents(year: 2026, month: 11, day: 3,
+                                                                   hour: 23, minute: 50)))
+        let midnight = try #require(calendar.date(from: DateComponents(year: 2026, month: 11, day: 4)))
+        var timer = TimerEngine(settings: .init(statusItemFields: [.sessions]), now: start, calendar: calendar)
+        _ = timer.handle(.start, at: start)
+        #expect(TimerRefreshSchedule.nextFireDate(for: timer, at: start, calendar: calendar) == midnight)
+    }
+
     @Test func firstRefreshChangesCounterOneSecondAfterStart() {
         var timer = TimerEngine(now: now)
         _ = timer.handle(.start, at: now)

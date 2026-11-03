@@ -1,8 +1,13 @@
-# Sessions
+# <img src="Resources/AppIcon.png" alt="Sessions icon" width="24" height="24" style="border-radius: 6px;"> Sessions
 
 Sessions is a native Pomodoro timer for the macOS menu bar. Customize work sessions, short and long breaks, and a daily session goal. Choose what appears in the menu bar: an icon, the current phase, remaining time, or session progress.
 
 Pause, resume, reset, or move between phases, and choose manual or automatic transitions. Keep working beyond your daily goal, with optional sounds and notifications when a countdown ends. Timer state and settings are saved locally. The app supports English and Russian, light and dark themes, and launch at login.
+
+<img src="screenshots/menu-bar-full.png" alt="Menu bar with symbol, phase, remaining time, and session progress" style="border-radius: 6px;">
+
+![Timer](screenshots/timer.png)
+![Cycle settings](screenshots/cycle-settings.png)
 
 ## Install
 

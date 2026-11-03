@@ -8,7 +8,9 @@ final class AppModel {
     static let persistenceKey = "Pomodoro.session.v1"
 
     private(set) var engine: TimerEngine
+    /// The retained popover must not observe the menu bar's live clock while hidden.
     private(set) var now: Date
+    private(set) var statusNow: Date
     private(set) var notificationStatus: NotificationAuthorization
     private(set) var loginItemEnabled: Bool
     private(set) var cachedIntegrationError: IntegrationError?
@@ -25,6 +27,10 @@ final class AppModel {
     @ObservationIgnored private var authorizationTask: Task<Void, Never>?
     @ObservationIgnored private var sleeping = false
     @ObservationIgnored private var lifecycleEnabled = false
+    @ObservationIgnored private var popoverVisible = false
+    @ObservationIgnored private var statusItemHovered = false
+    @ObservationIgnored private var voiceOverEnabled = false
+    @ObservationIgnored private var voiceOverObservation: NSKeyValueObservation?
 
     init(defaults: UserDefaults = .standard,
          notifications: NotificationService? = nil,
@@ -39,6 +45,7 @@ final class AppModel {
         self.loginItems = loginItems
         self.clock = clock
         self.now = now
+        self.statusNow = now
         self.engine = SessionPersistence.restoreForLaunch(defaults.data(forKey: Self.persistenceKey), now: now)
         self.notificationStatus = notifications.authorization
         self.loginItemEnabled = loginItems.isEnabled
@@ -66,7 +73,8 @@ final class AppModel {
         let events = updatedEngine.handle(action, at: instant)
         let changed = previousState != updatedEngine.state || previousSettings != updatedEngine.settings
         if changed || previousState.status == .running || updatedEngine.state.status == .running {
-            now = instant
+            statusNow = instant
+            if changed || popoverVisible { now = instant }
         }
         if changed { engine = updatedEngine }
         for event in events {
@@ -88,6 +96,28 @@ final class AppModel {
             requestNotificationPermissionIfNeeded()
         }
         scheduleNextTick(at: instant)
+    }
+
+    func setPopoverVisible(_ visible: Bool) {
+        guard popoverVisible != visible else { return }
+        popoverVisible = visible
+        if visible {
+            send(.tick(recovering: false))
+        } else {
+            scheduleNextTick(at: clock())
+        }
+    }
+
+    func setStatusItemHovered(_ hovered: Bool) {
+        guard statusItemHovered != hovered else { return }
+        statusItemHovered = hovered
+        send(.tick(recovering: false))
+    }
+
+    func setVoiceOverEnabled(_ enabled: Bool) {
+        guard voiceOverEnabled != enabled else { return }
+        voiceOverEnabled = enabled
+        send(.tick(recovering: false))
     }
 
     func updateSettings(_ transform: (inout PomodoroSettings) -> Void) {
@@ -165,6 +195,11 @@ final class AppModel {
 
     private func installLifecycle() {
         lifecycleEnabled = true
+        voiceOverEnabled = NSWorkspace.shared.isVoiceOverEnabled
+        voiceOverObservation = NSWorkspace.shared.observe(\.isVoiceOverEnabled, options: [.new]) { [weak self] workspace, _ in
+            let enabled = workspace.isVoiceOverEnabled
+            Task { @MainActor [weak self] in self?.setVoiceOverEnabled(enabled) }
+        }
         scheduleNextTick(at: now)
         observe(NSWorkspace.willSleepNotification, center: NSWorkspace.shared.notificationCenter) { $0.handleSleep() }
         observe(NSWorkspace.didWakeNotification, center: NSWorkspace.shared.notificationCenter) { $0.handleWake() }
@@ -180,7 +215,8 @@ final class AppModel {
     private func scheduleNextTick(at instant: Date) {
         guard lifecycleEnabled, !sleeping else { return }
         timer?.invalidate()
-        let fireDate = TimerRefreshSchedule.nextFireDate(for: engine, at: instant)
+        let fireDate = TimerRefreshSchedule.nextFireDate(
+            for: engine, at: instant, needsSeconds: popoverVisible || statusItemHovered || voiceOverEnabled)
         let timer = Timer(fire: fireDate, interval: 0, repeats: false) { [weak self] _ in
             MainActor.assumeIsolated { self?.send(.tick(recovering: false)) }
         }

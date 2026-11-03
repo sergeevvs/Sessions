@@ -3,12 +3,15 @@ import SwiftUI
 
 enum PomodoroStyle {
     static let panelWidth: CGFloat = 288
-    static let panelHeight: CGFloat = 480
+    static let panelHeight: CGFloat = 440
+    static let disabledOpacity = 0.6
     static let accent = adaptive(light: 0x078779, dark: 0x52C2B0)
-    static let accentHighlight = adaptive(light: 0x45A79B, dark: 0x298F83)
-    static let buttonAccent = Color(red: 7 / 255, green: 135 / 255, blue: 121 / 255)
+    // Keep white button labels legible across the entire opaque gradient.
+    static let accentHighlight = adaptive(light: 0x168476, dark: 0x218376)
+    static let buttonAccent = Color(red: 7 / 255, green: 127 / 255, blue: 114 / 255)
     static let ink = adaptive(light: 0x263B40, dark: 0xEDF6F8)
     static let secondary = adaptive(light: 0x5C6E73, dark: 0xB2C4CC)
+    static let error = adaptive(light: 0xA43F3A, dark: 0xF0ACA5)
     static let base = adaptive(light: 0xE8EEF0, dark: 0x24323D)
     static let track = adaptive(light: 0x344E56, dark: 0xE3FAFF).opacity(0.11)
     static let line = adaptive(light: 0x3A535E, dark: 0xE1F6FF).opacity(0.09)
@@ -73,7 +76,7 @@ struct PomodoroButtonStyle: ButtonStyle {
                     .strokeBorder(PomodoroStyle.accent.opacity(isFocused ? 0.8 : 0), lineWidth: 2)
             }
             .contentShape(RoundedRectangle(cornerRadius: radius))
-            .opacity(isEnabled ? 1 : 0.4)
+            .opacity(isEnabled ? 1 : PomodoroStyle.disabledOpacity)
     }
 }
 
@@ -189,7 +192,7 @@ struct GlassSwitchStyle: ToggleStyle {
         }
         .frame(minHeight: 34)
         .foregroundStyle(PomodoroStyle.ink)
-        .opacity(isEnabled ? 1 : 0.4)
+        .opacity(isEnabled ? 1 : PomodoroStyle.disabledOpacity)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.12), value: configuration.isOn)
     }
 }

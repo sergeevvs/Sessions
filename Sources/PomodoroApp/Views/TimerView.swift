@@ -49,13 +49,14 @@ struct TimerView: View {
     private var sessions: some View {
         VStack(spacing: 8) {
             HStack {
-                Text(t("Сессии")).foregroundStyle(PomodoroStyle.secondary)
+                Text(t("Сессии"))
                 Spacer(minLength: 8)
                 Text(StatusItemFormatter.formattedProgress(completed: state.completedSessions,
                                                            goal: model.engine.settings.dailyGoal, language: model.engine.settings.language))
                     .monospacedDigit().fontWeight(.medium)
             }
             .font(.system(size: 11))
+            .foregroundStyle(PomodoroStyle.secondary)
             HStack(spacing: 5) {
                 ForEach(0..<model.engine.settings.dailyGoal, id: \.self) { index in
                     RoundedRectangle(cornerRadius: 3)

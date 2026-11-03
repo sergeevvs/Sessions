@@ -49,6 +49,7 @@ struct SettingsView: View {
                 Button { selectedTab = tab } label: {
                     Text(t(tab.rawValue))
                         .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(selectedTab == tab ? PomodoroStyle.ink : PomodoroStyle.secondary)
                         .frame(maxWidth: .infinity)
                         .frame(height: 27)
                         .contentShape(RoundedRectangle(cornerRadius: 8))
@@ -190,7 +191,7 @@ struct SettingsView: View {
 
     @ViewBuilder private var integrationError: some View {
         if let error = model.integrationError {
-            Text(error).font(.caption).foregroundStyle(.red)
+            Text(error).font(.caption).foregroundStyle(PomodoroStyle.error)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityLabel(settings.language.text("Ошибка: \(error)", "Error: \(error)"))
                 .padding(.top, 10)
@@ -331,11 +332,11 @@ private struct IntegerSettingRow: View {
             .fixedSize(horizontal: true, vertical: false)
             Text(unit)
                 .font(.system(size: 10))
-                .foregroundStyle(PomodoroStyle.secondary.opacity(isEnabled ? 1 : 0.4))
+                .foregroundStyle(PomodoroStyle.secondary.opacity(isEnabled ? 1 : PomodoroStyle.disabledOpacity))
                 .frame(width: 22, alignment: .leading)
         }
         .font(.system(size: 11))
-        .foregroundStyle(PomodoroStyle.ink.opacity(isEnabled ? 1 : 0.4))
+        .foregroundStyle(PomodoroStyle.ink.opacity(isEnabled ? 1 : PomodoroStyle.disabledOpacity))
         .frame(minHeight: 34)
         .onAppear { draft = String(value) }
         .onChange(of: value) { if !editing { draft = String(value) } }

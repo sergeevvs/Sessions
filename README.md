@@ -6,7 +6,7 @@ Pause, resume, reset, or move between phases, and choose manual or automatic tra
 
 <img src="screenshots/menu-bar-full.png" alt="Menu bar with symbol, phase, remaining time, and session progress">
 
-![Timer](screenshots/timer.png)
+![Timer with daily session progress](screenshots/timer.png)
 ![Cycle settings](screenshots/cycle-settings.png)
 
 ## Install

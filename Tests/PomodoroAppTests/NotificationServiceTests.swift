@@ -12,6 +12,8 @@ final class SuspendedNotificationBackend: NotificationBackend {
     var authorizationWaiter: CheckedContinuation<NotificationAuthorization, Never>?
     var addWaiter: CheckedContinuation<Void, Never>?
     var authorization: NotificationAuthorization = .authorized
+    var authorizationError: Error?
+    var additionError: Error?
 
     func notificationAuthorization() async -> NotificationAuthorization {
         if holdAuthorization {
@@ -19,13 +21,16 @@ final class SuspendedNotificationBackend: NotificationBackend {
         }
         return authorization
     }
-    func requestAuthorization() async throws {}
+    func requestAuthorization() async throws {
+        if let authorizationError { throw authorizationError }
+    }
     func pendingIdentifiers() async -> [String] { Array(pending.keys) }
     func removePending(identifiers: [String]) {
         for id in identifiers { pending[id] = nil }
     }
     func add(_ notification: ScheduledNotification, identifier: String) async throws {
         if holdAdd { await withCheckedContinuation { addWaiter = $0 } }
+        if let additionError { throw additionError }
         pending[identifier] = notification
         additions.append(notification)
     }

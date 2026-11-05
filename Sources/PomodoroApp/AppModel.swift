@@ -129,6 +129,12 @@ final class AppModel {
     func testNotifications() async {
         let settings = engine.settings
         if settings.notificationsEnabled {
+            // Retrying owns permission/preview errors. A new failure reports
+            // itself through onError; a successful retry leaves no stale alert.
+            switch cachedIntegrationError?.kind {
+            case .authorization, .show: cachedIntegrationError = nil
+            default: break
+            }
             await notifications.testNotification(soundEnabled: settings.soundEnabled, language: settings.language)
         }
         if CompletionDeliveryPolicy.shouldPlayFallbackSound(
